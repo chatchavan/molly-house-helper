@@ -1,0 +1,7 @@
+# For OS X
+.DS_Store
+
+# Claude
+CLAUDE.local.md
+CLAUDE.local.workspace/*
+
