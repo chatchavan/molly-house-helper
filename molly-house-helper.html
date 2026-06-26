@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Molly House Helper</title>
+<style>
+:root {
+  --bg: #18090a;
+  --surface: #261414;
+  --surface2: #321c20;
+  --gold: #c8a04a;
+  --gold-dim: #7a5c28;
+  --cream: #f0e6d0;
+  --muted: #907870;
+  --s-pentacles: #c8a04a;
+  --s-fans: #5090d8;
+  --s-hearts: #d85050;
+  --s-cups: #40b098;
+  --raided-bg: #200808;
+  --raided-border: #aa2020;
+  --safe-color: #40a040;
+  --radius: 10px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  background: var(--bg);
+  color: var(--cream);
+  font-family: Georgia, 'Times New Roman', serif;
+  min-height: 100vh;
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* ── HEADER ── */
+#header {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--surface);
+  border-bottom: 1px solid var(--gold-dim);
+  padding: 8px 12px 6px;
+}
+.hdr-top {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 8px;
+}
+.hdr-title { font-size: 1em; color: var(--gold); font-weight: bold; }
+.hdr-btns { display: flex; gap: 6px; }
+button { cursor: pointer; font-family: inherit; }
+.ref-btn {
+  padding: 4px 10px; border-radius: 6px;
+  background: var(--surface2); border: 1px solid var(--s-fans);
+  color: var(--s-fans); font-size: 0.8em;
+}
+.reset-btn {
+  padding: 4px 8px; border-radius: 6px;
+  background: transparent; border: 1px solid var(--muted);
+  color: var(--muted); font-size: 0.78em;
+}
+.state-rows { display: flex; flex-direction: column; gap: 5px; }
+.state-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.state-label {
+  font-size: 0.7em; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.05em;
+  min-width: 50px;
+}
+.chips { display: flex; gap: 4px; flex-wrap: wrap; }
+.chip {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 28px; height: 28px; padding: 0 7px;
+  border-radius: 6px; border: 1px solid var(--gold-dim);
+  background: var(--surface2); color: var(--cream);
+  font-size: 0.82em; cursor: pointer; transition: all 0.12s;
+  user-select: none; -webkit-tap-highlight-color: transparent;
+}
+.chip.active { background: var(--gold); color: #18090a; border-color: var(--gold); font-weight: bold; }
+.house-chip {
+  display: inline-flex; align-items: center; gap: 3px;
+  height: 28px; padding: 0 8px; border-radius: 6px; border: 1px solid;
+  font-size: 0.78em; cursor: pointer; user-select: none;
+  -webkit-tap-highlight-color: transparent; transition: all 0.12s;
+}
+.house-chip[data-suit="pentacles"] { color: var(--s-pentacles); border-color: var(--s-pentacles); background: #1a1206; }
+.house-chip[data-suit="fans"]      { color: var(--s-fans);      border-color: var(--s-fans);      background: #060e1a; }
+.house-chip[data-suit="hearts"]    { color: var(--s-hearts);    border-color: var(--s-hearts);    background: #1a0606; }
+.house-chip[data-suit="cups"]      { color: var(--s-cups);      border-color: var(--s-cups);      background: #061410; }
+.house-chip.raided {
+  background: var(--raided-bg) !important;
+  border-color: var(--raided-border) !important;
+  color: #ff8080 !important;
+  text-decoration: line-through;
+}
+.house-chip.raided::after { content: ' ✕'; font-size: 0.9em; }
+
+/* ── MAIN CONTENT ── */
+#content { padding: 12px; max-width: 600px; margin: 0 auto; }
+
+/* ── HOME ── */
+.home-prompt {
+  text-align: center; color: var(--muted); font-size: 0.82em;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  margin: 14px 0 10px;
+}
+.phase-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.phase-card {
+  background: var(--surface); border: 1px solid var(--gold-dim);
+  border-radius: var(--radius); padding: 18px 10px;
+  text-align: center; cursor: pointer;
+  user-select: none; -webkit-tap-highlight-color: transparent;
+  transition: all 0.12s;
+}
+.phase-card:active { transform: scale(0.96); background: var(--surface2); }
+.phase-card .pi { font-size: 1.8em; display: block; margin-bottom: 5px; }
+.phase-card .pn { font-size: 0.9em; color: var(--cream); }
+.phase-card.pc-ref { border-color: var(--s-fans); grid-column: span 2; }
+.phase-card.pc-ref .pn { color: var(--s-fans); }
+
+/* ── PHASE HEADER ── */
+.phase-hdr {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
+}
+.back-btn {
+  background: transparent; border: none; color: var(--gold);
+  font-size: 1.4em; padding: 2px 6px; line-height: 1;
+}
+.phase-hdr-title { font-size: 1.15em; color: var(--gold); }
+
+/* ── SUB-PHASE NAV ── */
+.subphase-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--surface); border-radius: var(--radius);
+  padding: 10px 12px; margin-bottom: 14px; border: 1px solid var(--gold-dim);
+}
+.sp-btn {
+  background: transparent; border: 1px solid var(--gold-dim);
+  color: var(--gold); padding: 6px 14px; border-radius: 6px; font-size: 0.88em;
+}
+.sp-btn:disabled { opacity: 0.25; cursor: not-allowed; }
+.sp-info { text-align: center; }
+.sp-name { font-size: 0.95em; color: var(--cream); }
+.sp-counter { font-size: 0.72em; color: var(--muted); margin-top: 2px; }
+
+/* ── CHECKLIST ── */
+.checklist { list-style: none; }
+.cl-item {
+  background: var(--surface); border: 1px solid #3a2020;
+  border-radius: var(--radius); margin-bottom: 10px; overflow: hidden;
+  transition: opacity 0.15s;
+}
+.cl-item.checked { opacity: 0.5; border-color: #1e3020; }
+.cl-item-hdr {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 12px; cursor: pointer; user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.cl-check {
+  flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%;
+  border: 2px solid var(--gold-dim); margin-top: 1px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.85em; transition: all 0.15s; color: transparent;
+}
+.cl-item.checked .cl-check {
+  background: #1e4028; border-color: var(--safe-color); color: #70e870;
+}
+.cl-item.checked .cl-check::after { content: '✓'; }
+.cl-text { flex: 1; font-size: 0.92em; line-height: 1.55; }
+.cl-text strong { color: var(--gold); }
+.cl-text em { color: var(--s-cups); font-style: normal; }
+
+/* sub-items */
+.cl-subs { padding: 0 12px 10px 44px; }
+.cl-sub {
+  font-size: 0.85em; color: #b8a898; margin-bottom: 6px;
+  padding-left: 10px; border-left: 2px solid #3a2020; line-height: 1.5;
+}
+.cl-sub strong { color: var(--cream); }
+.cl-sub.warn { border-color: var(--s-hearts); color: #d09898; }
+.cl-sub.tip  { border-color: var(--s-fans);  color: #8898c0; }
+.cl-sub.safe { border-color: var(--s-cups);  color: #80b0a0; }
+
+/* quote */
+.cl-quote {
+  background: #140e08; border-left: 3px solid var(--gold-dim);
+  margin: 4px 12px 10px 44px; padding: 7px 10px;
+  font-style: italic; font-size: 0.8em; color: #a89878;
+  border-radius: 0 4px 4px 0;
+}
+.pg { font-style: normal; font-weight: bold; color: var(--gold-dim); }
+
+/* conditional tag */
+.cond { display: inline-block; font-size: 0.7em; padding: 1px 5px;
+  background: #18101e; border: 1px solid #6040a0; color: #a080c8;
+  border-radius: 4px; margin-left: 4px; font-style: normal; vertical-align: middle; }
+
+/* ── ACTION CARDS ── */
+.action-group-lbl {
+  font-size: 0.72em; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--muted); padding: 8px 2px 4px;
+}
+.ac {
+  background: var(--surface2); border: 1px solid #3a2020;
+  border-radius: 8px; margin-bottom: 8px; overflow: hidden;
+}
+.ac.site { border-color: var(--gold-dim); }
+.ac.unavail { opacity: 0.35; pointer-events: none; }
+.ac.danger { border-color: var(--s-hearts); }
+.ac-hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 12px; cursor: pointer; user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.ac-name { font-weight: bold; font-size: 0.92em; }
+.ac-badge {
+  font-size: 0.68em; padding: 2px 6px; border-radius: 4px;
+  background: var(--surface); color: var(--muted);
+}
+.ac-badge.site-b  { color: var(--gold);     border: 1px solid var(--gold-dim); background: transparent; }
+.ac-badge.warn-b  { color: #ff8080;         background: var(--raided-bg); }
+.ac-body {
+  display: none; padding: 4px 12px 12px; font-size: 0.86em; color: #b8a898; line-height: 1.55;
+}
+.ac.open .ac-body { display: block; }
+.ac-body ol, .ac-body ul { padding-left: 18px; }
+.ac-body li { margin-bottom: 5px; }
+.ac-body strong { color: var(--cream); }
+.ac-note {
+  background: #06060e; border-left: 3px solid var(--s-fans);
+  padding: 6px 8px; margin-top: 8px; font-size: 0.9em; color: #8898c0;
+  border-radius: 0 4px 4px 0;
+}
+.ac-warn {
+  background: #0e0606; border-left: 3px solid var(--s-hearts);
+  padding: 6px 8px; margin-top: 8px; font-size: 0.9em; color: #c08080;
+  border-radius: 0 4px 4px 0;
+}
+.ac-quote {
+  background: #100c06; border-left: 3px solid var(--gold-dim);
+  padding: 6px 8px; margin-top: 8px; font-size: 0.88em; color: #a08868;
+  font-style: italic; border-radius: 0 4px 4px 0;
+}
+.toggle-arrow { transition: transform 0.15s; display: inline-block; }
+.ac.open .toggle-arrow { transform: rotate(90deg); }
+
+/* ── ENDING CARDS ── */
+.ending { border-radius: var(--radius); border: 1px solid; padding: 14px; margin-bottom: 12px; }
+.ending h3 { font-size: 1em; margin-bottom: 8px; }
+.ending ul { padding-left: 18px; }
+.ending li, .ending p { font-size: 0.86em; color: #c0b0a0; line-height: 1.6; margin-bottom: 4px; }
+.ending.infiltration { border-color: var(--s-hearts); background: #1a0606; }
+.ending.infiltration h3 { color: var(--s-hearts); }
+.ending.survival { border-color: var(--s-cups); background: #061210; }
+.ending.survival h3 { color: var(--s-cups); }
+.ending.atrophy { border-color: var(--muted); background: #0e0e0e; }
+.ending.atrophy h3 { color: var(--muted); }
+.threshold-tag {
+  display: inline-block; font-size: 0.85em; padding: 2px 8px;
+  background: #0a1808; border: 1px solid var(--s-cups);
+  color: var(--s-cups); border-radius: 4px; margin: 4px 0;
+}
+
+/* ── REFERENCE DRAWER ── */
+#overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.65); z-index: 150;
+}
+#overlay.on { display: block; }
+#ref-drawer {
+  position: fixed; bottom: 0; left: 0; right: 0; max-height: 92vh;
+  background: #1a1020; border-top: 2px solid var(--s-fans);
+  border-radius: var(--radius) var(--radius) 0 0;
+  transform: translateY(100%); transition: transform 0.28s ease;
+  z-index: 200; overflow-y: auto; -webkit-overflow-scrolling: touch;
+}
+#ref-drawer.open { transform: translateY(0); }
+.drw-handle { text-align: center; padding: 10px; cursor: pointer; }
+.drw-handle::after {
+  content: ''; display: inline-block; width: 40px; height: 4px;
+  background: var(--muted); border-radius: 2px;
+}
+.drw-body { padding: 0 14px 50px; }
+.drw-title { font-size: 1.1em; color: var(--s-fans); margin-bottom: 16px; }
+.rs { margin-bottom: 22px; }
+.rs h3 {
+  font-size: 0.78em; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--gold); border-bottom: 1px solid var(--gold-dim);
+  padding-bottom: 4px; margin-bottom: 10px;
+}
+.rs p, .rs li { font-size: 0.86em; color: #b8a898; line-height: 1.6; margin-bottom: 4px; }
+.rs ul { padding-left: 16px; margin-bottom: 6px; }
+.rs strong { color: var(--cream); }
+.rs em { color: var(--s-cups); font-style: normal; }
+.rank-row {
+  display: flex; align-items: flex-start; gap: 10px;
+  background: var(--surface2); border-radius: 8px;
+  padding: 8px 12px; margin-bottom: 6px;
+}
+.rank-medal { font-size: 1.3em; flex-shrink: 0; line-height: 1.4; }
+.rank-name { font-size: 0.9em; color: var(--cream); font-weight: bold; }
+.rank-def  { font-size: 0.8em; color: var(--muted); margin-top: 2px; }
+.item-row {
+  background: var(--surface); border-radius: 8px;
+  padding: 8px 12px; margin-bottom: 7px; border: 1px solid #3a2020;
+}
+.item-name { font-size: 0.88em; color: var(--gold); font-weight: bold; }
+.item-when { font-size: 0.75em; color: var(--s-fans); margin: 1px 0 3px; }
+.item-effect { font-size: 0.82em; color: #b8a898; line-height: 1.4; }
+.expose-row {
+  display: flex; gap: 10px; align-items: flex-start;
+  background: var(--surface2); border-radius: 8px;
+  padding: 8px 12px; margin-bottom: 6px;
+}
+.expose-cause { font-size: 0.86em; color: var(--s-hearts); font-weight: bold; min-width: 130px; }
+.expose-who  { font-size: 0.82em; color: #b8a898; line-height: 1.5; }
+.thr-table { width: 100%; border-collapse: collapse; font-size: 0.82em; }
+.thr-table th { color: var(--muted); text-align: left; padding: 3px 6px; border-bottom: 1px solid #3a2020; }
+.thr-table td { padding: 5px 6px; border-bottom: 1px solid #281818; color: #b8a898; line-height: 1.4; }
+.joy-tbl { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.joy-cell {
+  background: var(--surface2); border-radius: 6px; padding: 8px;
+  text-align: center; border: 1px solid #3a2020;
+}
+.joy-cell.me { border-color: var(--s-cups); }
+.joy-p { font-size: 0.75em; color: var(--muted); margin-bottom: 3px; }
+.joy-v { font-size: 1.2em; color: var(--s-cups); font-weight: bold; }
+</style>
+</head>
+<body>
+
+<div id="header">
+  <div class="hdr-top">
+    <span class="hdr-title">🕯 Molly House</span>
+    <div class="hdr-btns">
+      <button class="ref-btn" onclick="openRef()">📖 Ref</button>
+      <button class="reset-btn" onclick="resetGame()">Reset</button>
+    </div>
+  </div>
+  <div class="state-rows">
+    <div class="state-row">
+      <span class="state-label">Players</span>
+      <div class="chips" id="chips-players"></div>
+      <span class="state-label" style="margin-left:8px">Week</span>
+      <div class="chips" id="chips-week"></div>
+    </div>
+    <div class="state-row">
+      <span class="state-label">Houses</span>
+      <div class="chips" id="chips-houses"></div>
+    </div>
+  </div>
+</div>
+
+<div id="content"></div>
+
+<div id="overlay" onclick="closeRef()"></div>
+<div id="ref-drawer">
+  <div class="drw-handle" onclick="closeRef()"></div>
+  <div class="drw-body" id="ref-body"></div>
+</div>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────────────────────
+
+const SUITS = {
+  pentacles: { name: 'Pentacles', sym: '◆', color: 'var(--s-pentacles)', house: "Mother Clap's" },
+  fans:      { name: 'Fans',      sym: '♦', color: 'var(--s-fans)',      house: "Miss Muff's"    },
+  hearts:    { name: 'Hearts',    sym: '♥', color: 'var(--s-hearts)',    house: "Sukey Bevell's" },
+  cups:      { name: 'Cups',      sym: '◉', color: 'var(--s-cups)',      house: "Julius Cesar Taylor's" },
+};
+const SUIT_KEYS = ['pentacles', 'fans', 'hearts', 'cups'];
+
+const JOY_THRESHOLD = { 2: 35, 3: 35, 4: 30, 5: 25 };
+const DESIRE_MAX    = { 2: 6,  3: 7,  4: 8,  5: 9  };
+const HAND_SIZE     = { 2: 5,  3: 4,  4: 4,  5: 4  };
+const FEST_ROUNDS   = { 2: 3,  3: 2,  4: 2,  5: 2  };
+const FEST_MIN_HAND = { 2: 3,  3: 2,  4: 2,  5: 2  };
+
+// ─── STATE ──────────────────────────────────────────────────────────────────
+
+let S = {
+  playerCount: 4,
+  week: 1,
+  raided: { pentacles: false, fans: false, hearts: false, cups: false },
+  phase: 'home',
+  subPhase: 0,
+  checked: [],      // array of item IDs that are checked
+  openActions: [],  // action card IDs that are expanded
+};
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem('mhh-state');
+    if (raw) {
+      const saved = JSON.parse(raw);
+      S.playerCount = saved.playerCount || 4;
+      S.week        = saved.week || 1;
+      S.raided      = saved.raided || { pentacles: false, fans: false, hearts: false, cups: false };
+      S.phase       = saved.phase || 'home';
+      S.subPhase    = saved.subPhase || 0;
+      // checked/openActions are transient, not saved
+    }
+  } catch(e) {}
+}
+
+function saveState() {
+  try {
+    localStorage.setItem('mhh-state', JSON.stringify({
+      playerCount: S.playerCount,
+      week: S.week,
+      raided: S.raided,
+      phase: S.phase,
+      subPhase: S.subPhase,
+    }));
+  } catch(e) {}
+}
+
+function resetGame() {
+  if (!confirm('Reset all game state?')) return;
+  S = { playerCount: 4, week: 1,
+    raided: { pentacles: false, fans: false, hearts: false, cups: false },
+    phase: 'home', subPhase: 0, checked: [], openActions: [] };
+  saveState();
+  render();
+}
+
+// ─── NAVIGATION ─────────────────────────────────────────────────────────────
+
+function goPhase(ph, sp) {
+  S.phase = ph;
+  S.subPhase = sp === undefined ? 0 : sp;
+  S.checked = [];
+  S.openActions = [];
+  saveState();
+  render();
+  window.scrollTo(0, 0);
+}
+
+function goHome() { goPhase('home'); }
+
+function toggleCheck(id) {
+  const i = S.checked.indexOf(id);
+  if (i >= 0) S.checked.splice(i, 1); else S.checked.push(id);
+  render();
+}
+
+function toggleAction(id) {
+  const i = S.openActions.indexOf(id);
+  if (i >= 0) S.openActions.splice(i, 1); else S.openActions.push(id);
+  render();
+}
+
+function prevSub(max) {
+  if (S.subPhase > 0) { S.subPhase--; S.checked = []; saveState(); render(); window.scrollTo(0,0); }
+}
+function nextSub(max) {
+  if (S.subPhase < max - 1) { S.subPhase++; S.checked = []; saveState(); render(); window.scrollTo(0,0); }
+}
+
+// ─── RENDER HELPERS ─────────────────────────────────────────────────────────
+
+function h(tag, attrs, ...children) {
+  const el = document.createElement(tag);
+  if (attrs) Object.entries(attrs).forEach(([k, v]) => {
+    if (k === 'class') el.className = v;
+    else if (k.startsWith('on')) el[k] = v;
+    else el.setAttribute(k, v);
+  });
+  children.forEach(c => {
+    if (c === null || c === undefined) return;
+    if (typeof c === 'string') el.insertAdjacentHTML('beforeend', c);
+    else el.appendChild(c);
+  });
+  return el;
+}
+
+function div(cls, ...ch) { return h('div', { class: cls }, ...ch); }
+
+function backBtn() {
+  return h('button', { class: 'back-btn', onclick: goHome }, '←');
+}
+
+function phaseHdr(title) {
+  return div('phase-hdr', backBtn(), h('span', { class: 'phase-hdr-title' }, title));
+}
+
+function checkedCls(id) { return S.checked.includes(id) ? 'cl-item checked' : 'cl-item'; }
+
+function clItem(id, textHTML, { subs = [], quote = null, noCheck = false } = {}) {
+  const isChecked = S.checked.includes(id);
+  const item = div(checkedCls(id));
+  const hdr = div('cl-item-hdr');
+  if (!noCheck) {
+    const chk = div('cl-check');
+    hdr.onclick = () => toggleCheck(id);
+    hdr.appendChild(chk);
+  }
+  const txt = div('cl-text');
+  txt.innerHTML = textHTML;
+  hdr.appendChild(txt);
+  item.appendChild(hdr);
+
+  if (subs.length) {
+    const subsEl = div('cl-subs');
+    subs.forEach(s => {
+      const el = div('cl-sub' + (s.cls ? ' ' + s.cls : ''));
+      el.innerHTML = s.html;
+      subsEl.appendChild(el);
+    });
+    item.appendChild(subsEl);
+  }
+  if (quote) {
+    const q = div('cl-quote');
+    q.innerHTML = `<span class="pg">p.${quote.page}</span> "${quote.text}"`;
+    item.appendChild(q);
+  }
+  return item;
+}
+
+function actionCard(id, name, badge, badgeCls, bodyHTML, { cls = '', disabled = false } = {}) {
+  const isOpen = S.openActions.includes(id);
+  const ac = div('ac' + (cls ? ' ' + cls : '') + (isOpen ? ' open' : '') + (disabled ? ' unavail' : ''));
+  const hdr = div('ac-hdr');
+  hdr.onclick = () => !disabled && toggleAction(id);
+  const nm = div('ac-name', name);
+  const bdg = h('span', { class: 'ac-badge ' + badgeCls }, badge);
+  const arr = h('span', { class: 'toggle-arrow' }, '›');
+  hdr.append(nm, h('span', { style: 'display:flex;gap:6px;align-items:center' }, bdg, arr));
+  const body = div('ac-body');
+  body.innerHTML = bodyHTML;
+  ac.append(hdr, body);
+  return ac;
+}
+
+function subphaseNav(currentStep, total, labels) {
+  const nav = div('subphase-nav');
+  const prev = h('button', { class: 'sp-btn', onclick: () => prevSub(total) }, '← Back');
+  if (currentStep === 0) prev.disabled = true;
+  const info = div('sp-info',
+    h('div', { class: 'sp-name' }, labels[currentStep]),
+    h('div', { class: 'sp-counter' }, `Step ${currentStep + 1} of ${total}`)
+  );
+  const next = h('button', { class: 'sp-btn', onclick: () => nextSub(total) }, 'Next →');
+  if (currentStep === total - 1) next.disabled = true;
+  nav.append(prev, info, next);
+  return nav;
+}
+
+// ─── HOME ────────────────────────────────────────────────────────────────────
+
+function renderHome() {
+  const c = div('');
+  c.appendChild(h('p', { class: 'home-prompt' }, 'Where are you in the game?'));
+  const grid = div('phase-grid');
+  [
+    ['🕯', 'Setup',        'setup'],
+    ['🎲', 'Your Turn',    'your-turn'],
+    ['🥂', 'Festivity',   'festivity'],
+    ['🏛', 'End of Week', 'end-of-week'],
+    ['⚖', 'Game End',    'game-end'],
+  ].forEach(([icon, name, ph]) => {
+    const card = div('phase-card');
+    card.innerHTML = `<span class="pi">${icon}</span><span class="pn">${name}</span>`;
+    card.onclick = () => goPhase(ph);
+    grid.appendChild(card);
+  });
+  const refCard = div('phase-card pc-ref');
+  refCard.innerHTML = `<span class="pi">📖</span><span class="pn">Reference &amp; Rules</span>`;
+  refCard.onclick = openRef;
+  grid.appendChild(refCard);
+  c.appendChild(grid);
+  return c;
+}
+
+// ─── SETUP ──────────────────────────────────────────────────────────────────
+
+function renderSetup() {
+  const pc = S.playerCount;
+  const c = div('');
+  c.appendChild(phaseHdr('Setup'));
+  const list = h('ul', { class: 'checklist' });
+
+  const items = [
+    ['s1', 'Place the <strong>board and playmat</strong> in the centre of the play area.'],
+    ['s2', 'Place supply nearby: cubes, house raided markers, dangerous cruising markers, dice, multiplier tokens, draw tokens.'],
+    ['s3', `Create the <strong>vice deck</strong>: gather all molly cards (jacks &amp; queens) + all threat cards (constables &amp; rogues) + desire cards <strong>1–${DESIRE_MAX[pc]}</strong> per suit.
+      <span class="cond">ℹ ${pc}p</span>`, {
+      subs: [
+        { html: '2p: cards 1–6 &nbsp; 3p: cards 1–7 &nbsp; 4p: cards 1–8 &nbsp; 5p: cards 1–9', cls: 'tip' }
+      ]
+    }],
+    ['s4', 'Shuffle vice deck; place to the right of the topmost market slot on the board.'],
+    ['s5', '<strong>Fill market</strong>: deal 4 cards face-up to the four market slots.'],
+    ['s6', '<strong>Gossip pile</strong>: deal 1 card face-down to start the gossip pile.'],
+    ['s7', 'Place <strong>community joy marker</strong> on "0" and <strong>week marker</strong> on "1" of the joy track.'],
+    ['s8', 'Shuffle 8 major + 8 minor <strong>indictment cards</strong> into two separate stacks.'],
+    ['s9', 'Shuffle 20 <strong>item cards</strong>; deal 1 face-up to each shop site. Stack remainder.'],
+    ['s10', 'Give a random player the <strong>candelabra</strong> — they are first player.'],
+    ['s11', 'Each player takes their <strong>player board</strong>, matching <strong>pawn</strong>, and 4 <strong>encounter tokens</strong> (keep face-down; you may look at your own).'],
+    ['s12', `Deal each player <strong>${HAND_SIZE[pc]} vice cards</strong>.<span class="cond">ℹ ${pc}p</span>`, {
+      subs: [{ html: '2 players receive 5 cards; 3–5 players receive 4 cards.', cls: 'tip' }]
+    }],
+    ['s13', 'Each player secretly selects <strong>1 card</strong> and places it face-down in their reputation area.'],
+    ['s14', 'All players simultaneously <strong>reveal</strong> their reputation card. Then:', {
+      subs: [
+        { html: '<strong>Desire:</strong> score the joy shown on the card.' },
+        { html: '<strong>Threat:</strong> add it to the safe pile (no joy scored).' },
+        { html: '<strong>Molly:</strong> nothing further happens.' },
+        { html: 'Place your pawn on the <strong>molly house matching the card\'s suit</strong>.' },
+      ]
+    }],
+  ];
+
+  items.forEach(([id, text, opts]) => list.appendChild(clItem(id, text, opts || {})));
+  c.appendChild(list);
+  return c;
+}
+
+// ─── YOUR TURN ───────────────────────────────────────────────────────────────
+
+function renderYourTurn() {
+  const pc = S.playerCount;
+  const c = div('');
+  c.appendChild(phaseHdr('Your Turn'));
+  const list = h('ul', { class: 'checklist' });
+
+  // Step 1: Roll
+  list.appendChild(clItem('yt1', '🎲 <strong>Roll both movement dice.</strong>', {
+    subs: [
+      { html: 'For each <strong>market discard icon</strong> rolled: take the farthest face-up market card.', cls: '' },
+      { html: '→ If it is a desire or molly card → <strong>safe pile</strong>.', cls: 'safe' },
+      { html: '→ If it is a threat → <strong>gossip pile</strong>; the <strong>Most Infamous</strong> player is exposed. (Most Infamous = highest sum of matching card <em>values</em>; mollies = 10. Ties: all tied are exposed.)', cls: 'warn' },
+    ],
+    quote: { page: 7, text: 'For each market discard icon you roll, take the card from the market that is farthest from the vice deck and add it to the safe pile. If it is a molly or threat card, add it to the gossip pile instead.' }
+  }));
+
+  // Step 2: Move
+  list.appendChild(clItem('yt2', '👞 <strong>Move your pawn.</strong>', {
+    subs: [
+      { html: 'Count <strong>boot icons</strong> on exactly one <em>or</em> both dice. Move that exact number of sites (no backtracking).' },
+      { html: 'If 0 boots (one die was a market discard) → you <strong>may stay</strong> at your current site.' },
+      { html: 'If <strong>both</strong> dice were market discards → take a carriage! Place pawn on <strong>any site</strong>.', cls: 'tip' },
+    ]
+  }));
+
+  // Step 3: Action
+  const actionItem = div('cl-item');
+  const actionHdr = div('cl-item-hdr');
+  const chk = div('cl-check');
+  actionHdr.onclick = () => toggleCheck('yt3');
+  if (S.checked.includes('yt3')) actionItem.className = 'cl-item checked';
+  actionHdr.appendChild(chk);
+  const actionTxt = div('cl-text');
+  actionTxt.innerHTML = '🎭 <strong>Take one action.</strong> You always have access to the three basic actions plus your current site\'s action.';
+  actionHdr.appendChild(actionTxt);
+  actionItem.appendChild(actionHdr);
+
+  // Action cards container
+  const acWrap = div('cl-subs');
+
+  acWrap.appendChild(h('div', { class: 'action-group-lbl' }, 'Basic Actions (available anywhere)'));
+
+  acWrap.appendChild(actionCard('ac-lielow', '😴 Lie Low', 'Basic', '',
+    `<p>Draw the top card of the vice deck and add it to your hand.</p>`));
+
+  acWrap.appendChild(actionCard('ac-indulge', '🃏 Indulge', 'Basic', '',
+    `<p>Select a card in the market matching the suit of your <strong>current site</strong> and add it to your hand.</p>
+    <div class="ac-note">Not available at shop sites (they have no suit).</div>`));
+
+  acWrap.appendChild(actionCard('ac-accuse', '👁 Accuse', 'Basic', '',
+    `<p>If another player's pawn is at your site, reveal one of their placed encounter tokens (from any house).</p>
+    <ul>
+      <li>Token shows <strong>Loyal</strong> → lower <em>your</em> joy by 3.</li>
+      <li>Token shows <strong>Informer</strong> → score 3 joy; advance community joy +3; that player is now a <strong>revealed informer</strong>.</li>
+    </ul>`));
+
+  acWrap.appendChild(h('div', { class: 'action-group-lbl' }, 'Site Actions (current site only)'));
+
+  // Cruise — check if any house is raided for the danger note
+  const anyRaided = SUIT_KEYS.some(k => S.raided[k]);
+  const cruiseBody = `
+    <ol>
+      <li>Play a <strong>desire</strong> card matching the site's suit from your hand to your <strong>reputation</strong>.</li>
+      <li>If you have a matching molly in reputation → score <strong>molly bonus</strong> now! (📖 Ref)</li>
+      <li>Draw cards from the vice deck equal to your reputation in that suit (max 4).</li>
+    </ol>
+    ${anyRaided ? `<div class="ac-warn">⚠️ <strong>Dangerous Cruising</strong> (if this site's molly house is raided): after drawing cards, add the card you just played to the <strong>gossip pile</strong> and gain 1 matching cube. You cannot take this action without playing a desire card, even if you have matching reputation.</div>` : ''}
+    <div class="ac-quote">p.9: "After playing a card and drawing cards (and scoring any molly bonuses), you must add the card you just played to the gossip pile and gain one matching cube."</div>`;
+  acWrap.appendChild(actionCard('ac-cruise', '🛤 Cruise', 'Site', 'site-b', cruiseBody,
+    { cls: 'site' + (anyRaided ? ' danger' : '') }));
+
+  acWrap.appendChild(actionCard('ac-shop', '🏪 Shop', 'Site', 'site-b',
+    `<ol>
+      <li>Take the item card from this shop; place it in a slot on your player board (max 2 items — discard one if full).</li>
+      <li>Perform a <strong>market discard</strong>: take the farthest card → safe pile if desire/molly; gossip pile if threat (and expose Most Infamous).</li>
+    </ol>`, { cls: 'site' }));
+
+  // Find any open house for festivity hint
+  const openHouses = SUIT_KEYS.filter(k => !S.raided[k]);
+  const festAvail = openHouses.length > 0;
+  const festBody = `
+    <p>Must have at least <strong>${FEST_MIN_HAND[pc]} cards</strong> in hand to start.<span class="cond">ℹ ${pc}p</span></p>
+    <p>Only available at open (non-raided) molly house corners.</p>
+    <div class="ac-note">→ Navigate to the <strong>Festivity</strong> phase on the home screen for the full checklist.</div>
+    ${!festAvail ? '<div class="ac-warn">⚠️ All houses are raided — Throw a Festivity is not available!</div>' : ''}`;
+  acWrap.appendChild(actionCard('ac-fest', '🥂 Throw a Festivity', 'Site', 'site-b', festBody,
+    { cls: 'site', disabled: !festAvail }));
+
+  acWrap.appendChild(actionCard('ac-bribe', '💌 Bribe (Item)', 'Item', '',
+    `<p>Play on your turn <em>instead of</em> an action: examine the gossip pile and secretly take 1 card of your choice into your hand.</p>`));
+
+  acWrap.appendChild(actionCard('ac-news', '📰 Newspaper Notice (Item)', 'Item', '',
+    `<p>Play on your turn <em>instead of</em> an action, while at an <strong>open molly house</strong>:</p>
+    <ol>
+      <li>Place one of your encounter tokens <strong>face-up</strong> at this house (you become a revealed informer if it's your informer token).</li>
+      <li>Add all matching-suit market cards to the gossip pile.</li>
+      <li>If you placed a <strong>loyal</strong> token: score 2 joy per card added to gossip.</li>
+    </ol>`));
+
+  actionItem.appendChild(acWrap);
+  list.appendChild(actionItem);
+
+  // Step 4: End of turn
+  list.appendChild(clItem('yt4', '🔄 <strong>End of turn:</strong> refill market &amp; check hand limit.', {
+    subs: [
+      { html: 'Shift remaining market cards down to fill gaps; draw from vice deck to refill.' },
+      { html: 'If your hand has more than <strong>6 cards</strong> → add the excess to the gossip pile (no exposure from this).' },
+      { html: '💡 If the vice deck is empty at the <em>start</em> of any player\'s turn → that player takes the candelabra and triggers <strong>End of the Week</strong> before taking their turn.', cls: 'tip' },
+    ]
+  }));
+
+  c.appendChild(list);
+  return c;
+}
+
+// ─── FESTIVITY ───────────────────────────────────────────────────────────────
+
+const FEST_LABELS = ['Bring to Order', 'Play Cards', 'Determine & Score', 'Generate Gossip', 'Bonuses'];
+
+function renderFestivity() {
+  const pc = S.playerCount;
+  const rounds = FEST_ROUNDS[pc];
+  const minHand = FEST_MIN_HAND[pc];
+  const c = div('');
+  c.appendChild(phaseHdr('Festivity'));
+  c.appendChild(subphaseNav(S.subPhase, 5, FEST_LABELS));
+
+  const list = h('ul', { class: 'checklist' });
+
+  if (S.subPhase === 0) {
+    // Bring to Order
+    list.appendChild(clItem('f0a', '🕯 Take the <strong>candelabra</strong> — you are the festivity runner.'));
+    list.appendChild(clItem('f0b', `Confirm you have at least <strong>${minHand} cards</strong> in hand.<span class="cond">ℹ ${pc}p</span>`, {
+      quote: { page: 10, text: 'You must have at least two cards in your hand to take this action (or three if playing with just two players).' }
+    }));
+    list.appendChild(clItem('f0c', 'Place your pawn at the molly house corner where the festivity is held.'));
+  }
+
+  else if (S.subPhase === 1) {
+    // Play Cards
+    list.appendChild(clItem('f1a', `Play cards over <strong>${rounds} round${rounds > 1 ? 's' : ''}</strong>.<span class="cond">ℹ ${pc}p</span>`));
+    list.appendChild(clItem('f1b', 'For <strong>each round</strong>:', {
+      subs: [
+        { html: '1. Runner reveals top card of vice deck → placed in centre (the <strong>community\'s card</strong>).' },
+        { html: '2. Starting with the runner, proceeding clockwise: each player <strong>passes</strong> (skip rest of festivity) or <strong>plays</strong> any card from hand face-up in front of them.' },
+        { html: '3. The <strong>runner must play</strong> a card each round (cannot pass).' },
+        { html: '<strong>Rogue:</strong> set its value 0–9 using a d10. Community rogue = roll d10 randomly.', cls: 'tip' },
+      ]
+    }));
+    list.appendChild(clItem('f1c', '💡 Item timing during Play Cards:', {
+      subs: [
+        { html: '<strong>Bottle of Gin</strong> — play <em>after</em> the last card but <em>before</em> set is selected: all players (even those who passed) play one more round.', cls: 'tip' },
+        { html: '<strong>Dress</strong> — play <em>after</em> you play a card: Surprise Ball for this festivity = 4 desires of that suit (not sequential). Multiple dresses can stack suits.', cls: 'tip' },
+        { html: '<strong>Violin</strong> — play <em>before</em> set is selected: draw 2 extra cards for the community.', cls: 'tip' },
+      ]
+    }));
+    list.appendChild(clItem('f1d', '🫙 Empty vice deck?', {
+      subs: [
+        { html: 'Players needing to draw gain a <strong>draw token</strong> per undrawn card.' },
+        { html: 'Community card: shuffle the gossip pile and draw from it instead.', cls: 'safe' },
+      ]
+    }));
+  }
+
+  else if (S.subPhase === 2) {
+    // Determine & Score
+    list.appendChild(clItem('f2a', '🏆 Select the <strong>best set of 4 cards</strong> from all played cards.', {
+      subs: [
+        { html: '🥇 <strong>Surprise Ball:</strong> 4 desires, same suit, in sequential order.' },
+        { html: '🥈 <strong>Christening:</strong> 1 Queen + 3 desires of the same value.' },
+        { html: '🥉 <strong>Dance:</strong> 1 Jack + 3 desires in sequence (ignore suit).' },
+        { html: '✸ <strong>Quiet Gathering:</strong> the 4 lowest desires (constables = 0; rogues ignored).', cls: 'warn' },
+        { html: 'Ties: pick set with the highest desire value. Runner decides if multiple valid sets of same rank exist.', cls: 'tip' },
+      ]
+    }));
+    list.appendChild(clItem('f2b', '📋 <strong>Score each selected card:</strong>', {
+      subs: [
+        { html: '<strong>Player\'s card</strong> → add to that player\'s reputation + score joy (number of stars on card).' },
+        { html: '<strong>Community card</strong> → advance community joy marker by amount shown; add card to safe pile.' },
+        { html: '<strong>Scored threat</strong> → add to safe pile (not reputation); see "Foiling Threats" below.', cls: 'warn' },
+        { html: '💡 Add mollies before desires if both score for same player at the same festivity.', cls: 'tip' },
+      ]
+    }));
+    list.appendChild(clItem('f2c', '⚔ <strong>Foiling a scored threat:</strong>', {
+      subs: [
+        { html: 'The player who scored the threat (or all, if community scored it) adds all <strong>matching reputation cards to the safe pile</strong>.' },
+        { html: '<strong>Pride Rule</strong> (optional, all-or-nothing): take 1 matching cube per card you added to safe pile.', cls: 'tip' },
+        { html: 'If multiple threats scored, runner decides the order.', cls: 'tip' },
+      ]
+    }));
+  }
+
+  else if (S.subPhase === 3) {
+    // Generate Gossip
+    list.appendChild(clItem('f3a', '🗣 Runner adds all <strong>remaining table cards</strong> to the gossip pile, one at a time.', {
+      subs: [
+        { html: 'For each card added: the player who played that card draws 1 card from the vice deck.' },
+        { html: 'No replacement draw for community cards.' },
+      ]
+    }));
+    list.appendChild(clItem('f3b', '⚠️ Exposure from un-scored threats:', {
+      subs: [
+        { html: '<strong>Player played unscored threat</strong> → that player is exposed.', cls: 'warn' },
+        { html: '<strong>Community played unscored threat</strong> → ALL players are exposed.', cls: 'warn' },
+        { html: 'Exposed: add all matching reputation cards to gossip pile; take 1 matching cube per card removed.', cls: 'warn' },
+      ]
+    }));
+  }
+
+  else if (S.subPhase === 4) {
+    // Bonuses
+    list.appendChild(clItem('f4a', '🏅 <strong>Runner\'s bonus:</strong>', {
+      subs: [
+        { html: '<strong>Surprise Ball / Christening / Dance:</strong> runner scores joy = their reputation at the festivity house.' },
+        { html: '<strong>Quiet Gathering:</strong> runner <em>loses</em> joy = their reputation at the festivity house.', cls: 'warn' },
+        { html: 'Joy cannot go below zero.' },
+      ]
+    }));
+    list.appendChild(clItem('f4b', '🏘 <strong>Community bonus</strong> — advance community joy marker:', {
+      subs: [
+        { html: '<strong>Surprise Ball</strong> → +3 joy.' },
+        { html: '<strong>Christening</strong> → +2 joy.' },
+        { html: '<strong>Dance</strong> → +1 joy.' },
+        { html: '<strong>Quiet Gathering</strong> → −1 joy (minimum 0).', cls: 'warn' },
+      ]
+    }));
+    list.appendChild(clItem('f4c', '✅ Festivity complete — your turn continues normally (refill market, check hand limit).'));
+  }
+
+  c.appendChild(list);
+  return c;
+}
+
+// ─── END OF THE WEEK ─────────────────────────────────────────────────────────
+
+const EOW_LABELS = ['Reveal Threats', 'Society Investigates', 'Encounter the Society', 'Cleanup'];
+
+function renderEndOfWeek() {
+  const pc = S.playerCount;
+  const nextWeek = S.week < 5 ? S.week + 1 : '—';
+  const threshold = JOY_THRESHOLD[pc];
+  const c = div('');
+  c.appendChild(phaseHdr('End of the Week'));
+  c.appendChild(subphaseNav(S.subPhase, 4, EOW_LABELS));
+
+  const list = h('ul', { class: 'checklist' });
+
+  if (S.subPhase === 0) {
+    // Reveal Threats
+    list.appendChild(clItem('e0a', '📢 Each player must <strong>reveal all threat cards</strong> in their hand.',{
+      quote: { page: 12, text: 'Each player must reveal all threat cards in their hand and add them to the gossip pile.' }
+    }));
+    list.appendChild(clItem('e0b', 'For each threat revealed:', {
+      subs: [
+        { html: 'Add the threat card to the <strong>gossip pile</strong>.' },
+        { html: 'That player is <strong>exposed</strong>: add all matching reputation cards to gossip pile; take 1 matching cube per card removed.', cls: 'warn' },
+        { html: 'If you revealed <em>at least 1</em> threat → gain <strong>1 draw token</strong>.', cls: 'safe' },
+      ]
+    }));
+  }
+
+  else if (S.subPhase === 1) {
+    // Society Investigates
+    list.appendChild(clItem('e1a', '🃏 <strong>Step A — Prepare gossip:</strong>', {
+      subs: [
+        { html: 'Shuffle the gossip pile.' },
+        { html: 'Count total cards. Remove <strong>⌊total ÷ 3⌋</strong> (round down) to the <strong>safe pile</strong> face-down.', cls: 'safe' },
+        { html: 'Reveal all remaining gossip cards face-up.' },
+      ],
+      quote: { page: 12, text: 'Shuffle the gossip pile. Add one third of the cards to the safe pile, rounding down. Reveal the remainder.' }
+    }));
+    list.appendChild(clItem('e1a2', '💡 Item: <strong>Domino</strong> — play NOW, before revealing, to ignore your reputation during any raids this phase.'));
+    list.appendChild(clItem('e1b', '🔍 <strong>Step B — Gather evidence:</strong>', {
+      subs: [
+        { html: 'For each revealed <strong>threat</strong>: count how many <strong>matching desires and mollies</strong> are among the revealed cards.' },
+        { html: 'Place that many <strong>evidence cubes</strong> on the matching molly house on the board.' },
+        { html: 'Threats do not generate evidence for other threats.' },
+      ]
+    }));
+    list.appendChild(clItem('e1c', '🚨 <strong>Step C — Check for raids:</strong>', {
+      subs: [
+        { html: 'Any open molly house with <strong>≥7 evidence</strong> is <strong>raided</strong>!', cls: 'warn' },
+        { html: 'Place House Raided marker + Dangerous Cruising markers at 2 adjacent sites.', cls: 'warn' },
+        { html: 'Remove exactly 7 evidence (leave any remainder).', cls: 'warn' },
+        { html: '<strong>Most</strong> matching reputation → major indictment. <strong>Second most</strong> → minor indictment. Ties: all tied players get same type. No reputation = not considered.', cls: 'warn' },
+        { html: '🔴 Mark raided house(es) in the header above!', cls: 'warn' },
+      ]
+    }));
+    list.appendChild(clItem('e1d', '🏁 <strong>Step D — Check game end:</strong>', {
+      subs: [
+        { html: 'All 4 houses raided OR a raided house has ≥7 evidence → <strong>Community Infiltration</strong>.', cls: 'warn' },
+        { html: `Community joy ≥ <strong>${threshold}</strong> (for ${pc} players) → <strong>Community Survival</strong>.`, cls: 'safe' },
+        { html: `Week ${S.week} was week 5 → <strong>Community Atrophy</strong>.`, cls: pc === 5 && S.week === 5 ? 'warn' : '' },
+        { html: '→ Navigate to <strong>Game End</strong> on the home screen if any condition is met.' },
+      ]
+    }));
+  }
+
+  else if (S.subPhase === 2) {
+    // Encounter the Society
+    list.appendChild(clItem('e2a', '🎭 All players who gained <strong>indictment cards this week</strong> must (simultaneously):', {
+      subs: [
+        { html: 'Select 1 of your encounter tokens and place it <strong>face-down</strong> on the nearest <strong>open</strong> molly house to your pawn.' },
+        { html: 'Clockwise tie-breaking if equidistant.' },
+        { html: 'The token\'s suit matches the molly house where it is placed.' },
+      ]
+    }));
+    list.appendChild(clItem('e2b', 'Players with 0 or 1 remaining encounter tokens may <strong>skip</strong> this phase.'));
+  }
+
+  else if (S.subPhase === 3) {
+    // Cleanup
+    list.appendChild(clItem('e3a', '1️⃣ <strong>Create new vice deck:</strong> shuffle all vice cards NOT in players\' hands, reputations, or the market.'));
+    list.appendChild(clItem('e3b', '2️⃣ <strong>Refill market:</strong> shift remaining market cards down; draw from vice deck to fill. Add <strong>1 card face-down</strong> to the gossip pile.'));
+    list.appendChild(clItem('e3c', '3️⃣ <strong>Draw tokens:</strong> each player draws 1 card per draw token; return tokens to supply.'));
+    list.appendChild(clItem('e3d', '4️⃣ <strong>Items:</strong> discard all item cards from shops; deal 1 new face-up item to each shop (shuffle discarded items if item deck is empty).'));
+    list.appendChild(clItem('e3e', `5️⃣ <strong>Advance week marker</strong> to week ${nextWeek === '—' ? '— (game should have ended)' : nextWeek}. Resume play with the candelabra holder.`, {
+      subs: nextWeek !== '—' ? [
+        { html: `🔄 Update Week to <strong>${nextWeek}</strong> in the header above!`, cls: 'tip' }
+      ] : [
+        { html: 'The 5th week has ended. Check for Community Atrophy on the Game End screen if neither Infiltration nor Survival was reached.', cls: 'warn' }
+      ]
+    }));
+  }
+
+  c.appendChild(list);
+  return c;
+}
+
+// ─── GAME END ────────────────────────────────────────────────────────────────
+
+function renderGameEnd() {
+  const pc = S.playerCount;
+  const threshold = JOY_THRESHOLD[pc];
+  const c = div('');
+  c.appendChild(phaseHdr('Game End'));
+
+  c.appendChild(h('p', { style: 'font-size:0.85em;color:var(--muted);margin-bottom:14px;' },
+    'Identify which ending applies, then follow that section.'));
+
+  // Community Infiltration
+  const inf = div('ending infiltration');
+  inf.innerHTML = `<h3>💀 Community Infiltration</h3>
+    <p><em>Triggered when: all 4 houses raided, OR a raided house has accumulated ≥7 evidence.</em></p>
+    <ol>
+      <li>All players reveal their encounter tokens on the board.</li>
+      <li>Players with <strong>no informer token</strong> → <strong>hanged</strong>.</li>
+      <li>Players with informer token at an <strong>open house</strong> → <strong>hanged</strong>.</li>
+      <li>Players with informer token at a <strong>raided house</strong> → successful informers; <em>not hanged</em>.</li>
+    </ol>
+    <p style="margin-top:8px"><strong>Successful informer scoring:</strong></p>
+    <ul>
+      <li>Set joy to zero.</li>
+      <li>+2 VP per evidence at their informer house.</li>
+      <li>+2 VP per matching reputation point of all <em>other</em> players.</li>
+      <li>−1 VP per card/cube in their <em>own</em> reputation (all suits).</li>
+      <li>Highest <em>positive</em> score wins. Tied or no positive score → all lose.</li>
+    </ul>`;
+  c.appendChild(inf);
+
+  // Community Survival
+  const sur = div('ending survival');
+  sur.innerHTML = `<h3>🎉 Community Survival</h3>
+    <p><em>Triggered when: community joy ≥ threshold before game otherwise ends.</em></p>
+    <p>Threshold for <strong>${pc} players</strong>: <span class="threshold-tag">${threshold} joy</span></p>
+    <ol>
+      <li>All players reveal encounter tokens and indictments.</li>
+      <li><strong>Successful informers</strong> (token at raided house): discard all indictments.</li>
+      <li><strong>Failed informers</strong> (token at open house): gain 1 additional major indictment.</li>
+      <li>Score <strong>loyal tokens</strong>: +2 joy per loyal token at an open house.</li>
+      <li>Each player with ≥1 indictment faces <strong>trial</strong>: for each card, roll a d10 and lose that many joy (per the card's roll table). A noose icon → <strong>hanged!</strong></li>
+    </ol>
+    <p style="margin-top:8px"><strong>Winner:</strong> player with highest joy who hasn't been hanged. Ties share victory.</p>`;
+  c.appendChild(sur);
+
+  // Community Atrophy
+  const atr = div('ending atrophy');
+  atr.innerHTML = `<h3>💨 Community Atrophy</h3>
+    <p><em>Triggered when: the fifth week ends with neither Infiltration nor Survival reached.</em></p>
+    <p>All players lose.</p>`;
+  c.appendChild(atr);
+
+  // Joy threshold table
+  const tbl = div('ending', `<h3 style="color:var(--muted)">Joy Thresholds (Community Survival)</h3>`);
+  tbl.style.border = '1px solid #3a2020';
+  tbl.style.background = 'var(--surface)';
+  const jgrid = div('joy-tbl');
+  [2, 3, 4, 5].forEach(p => {
+    const cell = div('joy-cell' + (p === pc ? ' me' : ''));
+    cell.innerHTML = `<div class="joy-p">${p}p</div><div class="joy-v">${JOY_THRESHOLD[p]}</div>`;
+    jgrid.appendChild(cell);
+  });
+  tbl.appendChild(jgrid);
+  c.appendChild(tbl);
+
+  return c;
+}
+
+// ─── REFERENCE DRAWER ────────────────────────────────────────────────────────
+
+function buildRefBody() {
+  const body = document.getElementById('ref-body');
+  body.innerHTML = '';
+  const pc = S.playerCount;
+
+  const title = div('drw-title', '📖 Quick Reference');
+  body.appendChild(title);
+
+  // Exposure
+  const exp = div('rs');
+  exp.innerHTML = `<h3>Exposure — When &amp; Who</h3>
+    <p style="margin-bottom:8px;font-size:0.8em;color:var(--muted)">When exposed: add ALL matching reputation cards to gossip pile; take 1 matching cube per card removed.</p>`;
+  const expRows = [
+    ['Market discard reveals a threat', 'Most Infamous player (highest sum of matching card values; mollies = 10; ties: all tied exposed)'],
+    ['Player played unscored threat at festivity', 'That player'],
+    ['Community played unscored threat at festivity', 'ALL players'],
+    ['Reveal Threats phase', 'The player who revealed it'],
+  ];
+  expRows.forEach(([cause, who]) => {
+    const row = div('expose-row');
+    row.innerHTML = `<div class="expose-cause">${cause}</div><div class="expose-who">${who}</div>`;
+    exp.appendChild(row);
+  });
+  body.appendChild(exp);
+
+  // Most Infamous vs Most Reputation
+  const mi = div('rs');
+  mi.innerHTML = `<h3>Most Infamous vs Most Reputation</h3>
+    <table class="thr-table">
+      <tr><th>Concept</th><th>Used for</th><th>How measured</th></tr>
+      <tr><td><strong>Most Infamous</strong></td><td>Market-discard exposure</td><td>Highest <em>sum of card values</em> (mollies = 10)</td></tr>
+      <tr><td><strong>Most Reputation</strong></td><td>Raid indictments</td><td>Highest <em>count</em> of matching cards + cubes (values irrelevant)</td></tr>
+    </table>`;
+  body.appendChild(mi);
+
+  // Molly Bonus
+  const mb = div('rs');
+  mb.innerHTML = `<h3>Molly Bonus</h3>
+    <ul>
+      <li>Matching <strong>Jack</strong> in reputation → +2 joy when a desire enters your reputation in that suit.</li>
+      <li>Matching <strong>Queen</strong> in reputation → +3 joy.</li>
+      <li>Both <strong>Jack &amp; Queen</strong> in reputation → +5 joy.</li>
+    </ul>
+    <p style="margin-top:6px"><strong>Important:</strong> add mollies to reputation <em>before</em> desires when both score at the same time (so new desires still trigger the bonus).</p>`;
+  body.appendChild(mb);
+
+  // Foiling threats
+  const ft = div('rs');
+  ft.innerHTML = `<h3>Foiling Threats &amp; Pride Rule</h3>
+    <p>When a threat is <strong>selected (scored)</strong> at a festivity:</p>
+    <ol>
+      <li>Add threat to safe pile.</li>
+      <li>That player (or all, if community scored it) adds <strong>all matching reputation cards</strong> to the safe pile.</li>
+      <li><strong>Pride Rule</strong> (optional, all-or-nothing): take 1 matching cube per card added to the safe pile.</li>
+    </ol>
+    <p style="margin-top:4px;font-size:0.82em;color:var(--muted)">If multiple threats scored, runner decides the order.</p>`;
+  body.appendChild(ft);
+
+  // Festivity ranking
+  const fr = div('rs');
+  fr.innerHTML = `<h3>Festivity Ranking</h3>`;
+  const ranks = [
+    ['🥇', 'Surprise Ball', '4 desires, same suit, in sequential order'],
+    ['🥈', 'Christening', '1 Queen + 3 desires of the same value'],
+    ['🥉', 'Dance', '1 Jack + 3 desires in sequence (ignore suit)'],
+    ['✸', 'Quiet Gathering', '4 lowest desires — constables count as 0, rogues ignored'],
+  ];
+  ranks.forEach(([medal, name, def]) => {
+    const row = div('rank-row');
+    row.innerHTML = `<div class="rank-medal">${medal}</div><div><div class="rank-name">${name}</div><div class="rank-def">${def}</div></div>`;
+    fr.appendChild(row);
+  });
+  fr.innerHTML += `<p style="margin-top:8px;font-size:0.82em;color:var(--muted)">Ties: pick set with highest desire value. Runner decides between multiple valid sets of equal rank. Rogues: you set value 0–9 on d10; community rogue = roll d10 randomly.</p>`;
+  body.appendChild(fr);
+
+  // Items
+  const it = div('rs');
+  it.innerHTML = `<h3>Item Cards (play once, then discard)</h3>`;
+  const items = [
+    ['Bottle of Gin', 'Festivity — after last card played, before set selected', 'All players (even those who passed) play one more round. Revealed informers barred from the house may play this round.'],
+    ['Bribe', 'Your turn instead of an action', 'Examine the gossip pile; secretly add 1 card of your choice to your hand.'],
+    ['Domino', 'End of Week — before revealing gossip (Society Investigates)', 'Your reputation is ignored during any raids this phase.'],
+    ['Dress (per suit)', 'Festivity — after you play a card', 'Surprise Ball now = 4 desires of this dress\'s suit (not sequential). Multiple dresses can combine suits.'],
+    ['Newspaper Notice', 'Your turn instead of action, at open house', 'Place encounter token face-up here; matching market cards → gossip (+2 joy each if loyal token). Informer token = immediately becomes revealed informer.'],
+    ['Violin', 'Festivity — before set is selected', 'Draw 2 extra cards for the community. If deck empty, shuffle and draw from gossip.'],
+  ];
+  items.forEach(([name, when, effect]) => {
+    const row = div('item-row');
+    row.innerHTML = `<div class="item-name">${name}</div><div class="item-when">⏱ ${when}</div><div class="item-effect">${effect}</div>`;
+    it.appendChild(row);
+  });
+  body.appendChild(it);
+
+  // Joy Thresholds
+  const jt = div('rs');
+  jt.innerHTML = `<h3>Community Survival — Joy Thresholds</h3>`;
+  const jgrid = div('joy-tbl');
+  [2, 3, 4, 5].forEach(p => {
+    const cell = div('joy-cell' + (p === pc ? ' me' : ''));
+    cell.innerHTML = `<div class="joy-p">${p}p</div><div class="joy-v">${JOY_THRESHOLD[p]}</div>`;
+    jgrid.appendChild(cell);
+  });
+  jt.appendChild(jgrid);
+  body.appendChild(jt);
+
+  // Informer quick-ref
+  const inf = div('rs');
+  inf.innerHTML = `<h3>Informers Quick Reference</h3>
+    <ul>
+      <li>Players become informers by placing their <em>informer</em> encounter token during Encounter the Society.</li>
+      <li><strong>Successful informer</strong>: informer token is at a raided house by game end → indictments pardoned (Community Survival) or alternative win path (Community Infiltration).</li>
+      <li><strong>Failed informer</strong>: token at open house when game ends → gain 1 additional major indictment.</li>
+      <li><strong>Revealed informer</strong>: token exposed mid-game (via Accuse or Newspaper Notice) → restrictions apply (cannot throw festivity / cruise at their token's house; excess cards to safe pile instead of gossip; no threat reveal at End of Week for their suit).</li>
+    </ul>`;
+  body.appendChild(inf);
+}
+
+function openRef() {
+  buildRefBody();
+  document.getElementById('overlay').classList.add('on');
+  document.getElementById('ref-drawer').classList.add('open');
+}
+function closeRef() {
+  document.getElementById('overlay').classList.remove('on');
+  document.getElementById('ref-drawer').classList.remove('open');
+}
+
+// ─── HEADER CHIPS ────────────────────────────────────────────────────────────
+
+function renderChips() {
+  // Players
+  const pChips = document.getElementById('chips-players');
+  pChips.innerHTML = '';
+  [2, 3, 4, 5].forEach(p => {
+    const c = div('chip' + (S.playerCount === p ? ' active' : ''), String(p));
+    c.onclick = () => { S.playerCount = p; S.checked = []; saveState(); render(); };
+    pChips.appendChild(c);
+  });
+
+  // Week
+  const wChips = document.getElementById('chips-week');
+  wChips.innerHTML = '';
+  [1, 2, 3, 4, 5].forEach(w => {
+    const c = div('chip' + (S.week === w ? ' active' : ''), String(w));
+    c.onclick = () => { S.week = w; saveState(); render(); };
+    wChips.appendChild(c);
+  });
+
+  // Houses
+  const hChips = document.getElementById('chips-houses');
+  hChips.innerHTML = '';
+  SUIT_KEYS.forEach(k => {
+    const s = SUITS[k];
+    const raided = S.raided[k];
+    const c = h('div', {
+      class: 'house-chip' + (raided ? ' raided' : ''),
+      'data-suit': k,
+    }, s.sym + ' ' + s.name.substring(0, 4));
+    c.onclick = () => {
+      S.raided[k] = !S.raided[k];
+      S.checked = [];
+      saveState();
+      render();
+    };
+    hChips.appendChild(c);
+  });
+}
+
+// ─── MAIN RENDER ─────────────────────────────────────────────────────────────
+
+function render() {
+  renderChips();
+  const content = document.getElementById('content');
+  content.innerHTML = '';
+
+  let section;
+  if      (S.phase === 'home')       section = renderHome();
+  else if (S.phase === 'setup')      section = renderSetup();
+  else if (S.phase === 'your-turn')  section = renderYourTurn();
+  else if (S.phase === 'festivity')  section = renderFestivity();
+  else if (S.phase === 'end-of-week') section = renderEndOfWeek();
+  else if (S.phase === 'game-end')   section = renderGameEnd();
+  else section = renderHome();
+
+  content.appendChild(section);
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+
+loadState();
+render();
+</script>
+</body>
+</html>

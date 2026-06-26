@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Molly House — Quick Reference</title>
+<style>
+:root {
+  --gold: #8a6a20;
+  --dark: #1a0808;
+  --text: #1a0c08;
+  --muted: #6a5040;
+  --s-p: #8a6a10;
+  --s-f: #1a5090;
+  --s-h: #901818;
+  --s-c: #187060;
+  --border: #c0a870;
+  --bg-section: #faf5ea;
+}
+
+@media screen {
+  body { background: #f5ede0; font-size: 13px; }
+  .page { max-width: 210mm; margin: 20px auto; padding: 16px; background: white; box-shadow: 0 2px 12px rgba(0,0,0,0.15); }
+  .print-note { text-align: center; padding: 8px; font-size: 12px; color: #888; margin-bottom: 8px; }
+  .print-note a { color: #5090d8; }
+}
+
+@media print {
+  @page { size: A4; margin: 10mm 12mm; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { background: white; font-size: 10px; }
+  .page { padding: 0; }
+  .print-note { display: none; }
+}
+
+body { font-family: Georgia, 'Times New Roman', serif; color: var(--text); line-height: 1.4; }
+
+.page { }
+
+h1 {
+  font-size: 1.4em; color: var(--gold); text-align: center;
+  border-bottom: 2px solid var(--border); padding-bottom: 4px; margin-bottom: 10px;
+  letter-spacing: 0.05em;
+}
+
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.cols3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.col-full { grid-column: span 2; }
+
+.section {
+  background: var(--bg-section);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 7px 9px;
+  margin-bottom: 8px;
+  break-inside: avoid;
+}
+
+h2 {
+  font-size: 0.82em; text-transform: uppercase; letter-spacing: 0.07em;
+  color: var(--gold); border-bottom: 1px solid var(--border);
+  margin-bottom: 6px; padding-bottom: 2px;
+}
+
+p { font-size: 0.85em; margin-bottom: 4px; }
+ul { padding-left: 14px; margin-bottom: 4px; }
+li { font-size: 0.83em; margin-bottom: 3px; line-height: 1.45; }
+strong { color: var(--dark); }
+em { color: var(--s-c); font-style: normal; }
+.warn { color: var(--s-h); }
+.tip  { color: var(--s-f); }
+.ok   { color: var(--s-c); }
+
+/* Phase sequence strip */
+.phase-strip { display: flex; gap: 4px; margin-bottom: 8px; align-items: stretch; }
+.ps {
+  flex: 1; background: var(--gold); color: white; border-radius: 4px;
+  text-align: center; padding: 5px 3px; font-size: 0.72em; font-weight: bold;
+  line-height: 1.3; display: flex; align-items: center; justify-content: center;
+}
+.ps.sub {
+  background: #c09050; font-size: 0.68em; padding: 4px 3px;
+}
+.ps-arrow { font-size: 1em; color: var(--muted); align-self: center; }
+
+/* Festivity ranking */
+.rank-table { width: 100%; border-collapse: collapse; font-size: 0.8em; }
+.rank-table th { border-bottom: 1px solid var(--border); padding: 2px 5px; text-align: left; color: var(--muted); font-size: 0.9em; }
+.rank-table td { padding: 3px 5px; border-bottom: 1px solid #e8dcc8; vertical-align: top; line-height: 1.4; }
+.rank-table td:first-child { font-size: 1.1em; width: 1.5em; }
+
+/* Exposure table */
+.exp-table { width: 100%; border-collapse: collapse; font-size: 0.78em; }
+.exp-table th { border-bottom: 1px solid var(--border); padding: 2px 4px; text-align: left; color: var(--muted); }
+.exp-table td { padding: 3px 4px; border-bottom: 1px solid #e8dcc8; vertical-align: top; line-height: 1.4; }
+.exp-table td.cause { color: var(--s-h); font-weight: bold; }
+
+/* Items */
+.item { margin-bottom: 5px; font-size: 0.8em; }
+.item-name { font-weight: bold; color: var(--dark); }
+.item-when { color: var(--s-f); font-size: 0.88em; }
+
+/* Joy threshold */
+.joy-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 4px; }
+.joy-cell {
+  border: 1px solid var(--border); border-radius: 4px; text-align: center; padding: 4px;
+}
+.joy-p { font-size: 0.72em; color: var(--muted); }
+.joy-v { font-size: 1.15em; font-weight: bold; color: var(--s-c); }
+
+/* EOW steps */
+.eow-steps { display: flex; flex-direction: column; gap: 4px; }
+.eow-step { display: flex; gap: 7px; align-items: flex-start; font-size: 0.8em; }
+.eow-num {
+  flex-shrink: 0; width: 18px; height: 18px; border-radius: 50%;
+  background: var(--gold); color: white; display: flex; align-items: center;
+  justify-content: center; font-size: 0.78em; font-weight: bold; margin-top: 1px;
+}
+.eow-body { flex: 1; line-height: 1.45; }
+.eow-body strong { color: var(--dark); }
+
+/* Suit badges */
+.suit { display: inline-block; padding: 1px 5px; border-radius: 3px; font-size: 0.8em; font-weight: bold; }
+.suit-p { color: var(--s-p); border: 1px solid var(--s-p); }
+.suit-f { color: var(--s-f); border: 1px solid var(--s-f); }
+.suit-h { color: var(--s-h); border: 1px solid var(--s-h); }
+.suit-c { color: var(--s-c); border: 1px solid var(--s-c); }
+
+/* Comparison table */
+.cmp-table { width: 100%; border-collapse: collapse; font-size: 0.78em; }
+.cmp-table th { background: #ede8d8; padding: 3px 5px; text-align: left; color: var(--muted); font-size: 0.88em; }
+.cmp-table td { padding: 3px 5px; border-bottom: 1px solid #e0d8c0; vertical-align: top; line-height: 1.4; }
+
+/* Game endings */
+.endings { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+.ending {
+  border-radius: 5px; padding: 6px 8px;
+  border: 1px solid; font-size: 0.78em; line-height: 1.45;
+}
+.ending h3 { font-size: 1em; margin-bottom: 4px; }
+.ending.inf { border-color: var(--s-h); background: #fff0f0; }
+.ending.inf h3 { color: var(--s-h); }
+.ending.sur { border-color: var(--s-c); background: #f0fff8; }
+.ending.sur h3 { color: var(--s-c); }
+.ending.atr { border-color: var(--muted); background: #f8f5f0; }
+.ending.atr h3 { color: var(--muted); }
+.ending ul { padding-left: 12px; }
+.ending li { margin-bottom: 2px; }
+
+footer {
+  text-align: center; font-size: 0.72em; color: var(--muted);
+  margin-top: 10px; border-top: 1px solid var(--border); padding-top: 6px;
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="print-note">
+  💡 Print with "Background graphics" enabled for best results.
+  Use alongside the <a href="molly-house-helper.html">interactive helper</a> for phase checklists.
+</div>
+
+<h1>🕯 Molly House — Quick Reference</h1>
+
+<!-- ── TURN SEQUENCE STRIP ── -->
+<div class="phase-strip">
+  <div class="ps">Setup</div>
+  <div class="ps-arrow">›</div>
+  <div class="ps" style="flex:2">Your Turn (repeat until deck empty)</div>
+  <div class="ps-arrow">›</div>
+  <div class="ps" style="flex:1.5">End of the Week</div>
+  <div class="ps-arrow">›</div>
+  <div class="ps">Game End</div>
+</div>
+<div class="phase-strip" style="margin-top:-6px;margin-bottom:10px;">
+  <div class="ps sub" style="flex:4">1. Roll dice · discard markets · move</div>
+  <div class="ps-arrow">›</div>
+  <div class="ps sub" style="flex:3">2. Take one action</div>
+  <div class="ps-arrow">›</div>
+  <div class="ps sub" style="flex:3">3. Refill market · check hand ≤6</div>
+</div>
+
+<div class="cols">
+
+<!-- LEFT COLUMN -->
+<div>
+
+  <!-- Exposure -->
+  <div class="section">
+    <h2>Exposure — When &amp; Who</h2>
+    <p style="font-size:0.78em;color:var(--muted);margin-bottom:5px">Effect: add ALL matching reputation cards → gossip pile; take 1 matching cube per card removed.</p>
+    <table class="exp-table">
+      <tr><th>Trigger</th><th>Who is exposed</th></tr>
+      <tr>
+        <td class="cause">Threat discarded from market</td>
+        <td><strong>Most Infamous</strong> — highest <em>sum of card values</em> in matching suit (mollies = 10). Ties: all tied.</td>
+      </tr>
+      <tr>
+        <td class="cause">Player's unscored threat at festivity</td>
+        <td>That player</td>
+      </tr>
+      <tr>
+        <td class="cause">Community's unscored threat at festivity</td>
+        <td><strong>ALL</strong> players</td>
+      </tr>
+      <tr>
+        <td class="cause">Reveal Threats (End of Week)</td>
+        <td>The player who revealed it</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Most Infamous vs Most Reputation -->
+  <div class="section">
+    <h2>Most Infamous vs Most Reputation</h2>
+    <table class="cmp-table">
+      <tr><th>Concept</th><th>Used for</th><th>Measured by</th></tr>
+      <tr>
+        <td><strong>Most Infamous</strong></td>
+        <td>Market-discard exposure</td>
+        <td>Highest <em>sum of card values</em>; mollies = 10</td>
+      </tr>
+      <tr>
+        <td><strong>Most Reputation</strong></td>
+        <td>Raid indictments</td>
+        <td>Highest <em>count</em> of matching cards + cubes (values don't matter)</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Molly Bonus -->
+  <div class="section">
+    <h2>Molly Bonus</h2>
+    <ul>
+      <li>Matching <strong>Jack</strong> in reputation → <em>+2 joy</em> each time a desire enters your reputation in that suit.</li>
+      <li>Matching <strong>Queen</strong> → <em>+3 joy</em>. Both Jack &amp; Queen → <em>+5 joy</em>.</li>
+      <li class="warn">⚠ Add mollies to reputation <strong>before</strong> desires (so new desires still trigger the bonus).</li>
+    </ul>
+  </div>
+
+  <!-- Foiling Threats -->
+  <div class="section">
+    <h2>Foiling Threats &amp; Pride Rule</h2>
+    <p>When a threat is <strong>selected (scored)</strong> at a festivity:</p>
+    <ol style="font-size:0.83em;padding-left:14px;margin:4px 0">
+      <li>Add threat to <strong>safe pile</strong>.</li>
+      <li>That player (or all, if community scored) adds <strong>all matching reputation cards → safe pile</strong>.</li>
+      <li><strong class="ok">Pride Rule</strong> (optional, all-or-nothing): take 1 matching cube per card you added to the safe pile.</li>
+    </ol>
+  </div>
+
+  <!-- Festivity ranking -->
+  <div class="section">
+    <h2>Festivity Ranking (best 4 cards)</h2>
+    <table class="rank-table">
+      <tr><th></th><th>Name</th><th>Definition</th></tr>
+      <tr>
+        <td>🥇</td>
+        <td><strong>Surprise Ball</strong></td>
+        <td>4 desires, same suit, sequential order</td>
+      </tr>
+      <tr>
+        <td>🥈</td>
+        <td><strong>Christening</strong></td>
+        <td>1 Queen + 3 desires of same value</td>
+      </tr>
+      <tr>
+        <td>🥉</td>
+        <td><strong>Dance</strong></td>
+        <td>1 Jack + 3 desires in sequence (ignore suit)</td>
+      </tr>
+      <tr>
+        <td>✸</td>
+        <td><strong>Quiet Gathering</strong></td>
+        <td>4 lowest desires — constables = 0; rogues ignored</td>
+      </tr>
+    </table>
+    <p style="font-size:0.75em;color:var(--muted);margin-top:4px">Ties: pick set with highest desire value. Runner decides between multiple valid sets of equal rank.</p>
+    <p style="font-size:0.75em;color:var(--muted)">Rogues: owner sets value 0–9 on d10. Community rogue: roll d10.</p>
+  </div>
+
+  <!-- Festivity bonuses quick ref -->
+  <div class="section">
+    <h2>Festivity Bonuses</h2>
+    <table class="rank-table">
+      <tr><th>Result</th><th>Runner</th><th>Community joy</th></tr>
+      <tr><td>Surprise Ball</td><td>+rep at house</td><td>+3</td></tr>
+      <tr><td>Christening</td><td>+rep at house</td><td>+2</td></tr>
+      <tr><td>Dance</td><td>+rep at house</td><td>+1</td></tr>
+      <tr><td class="warn">Quiet Gathering</td><td class="warn">−rep at house</td><td class="warn">−1</td></tr>
+    </table>
+    <p style="font-size:0.75em;color:var(--muted);margin-top:3px">Joy cannot go below 0.</p>
+  </div>
+
+</div><!-- /left -->
+
+<!-- RIGHT COLUMN -->
+<div>
+
+  <!-- End of the Week -->
+  <div class="section">
+    <h2>End of the Week (4 phases)</h2>
+    <div class="eow-steps">
+      <div class="eow-step">
+        <div class="eow-num">1</div>
+        <div class="eow-body">
+          <strong>Reveal Threats.</strong> Each player reveals all threats in hand → gossip pile + exposed. Gain 1 draw token if you revealed ≥1 threat.
+        </div>
+      </div>
+      <div class="eow-step">
+        <div class="eow-num">2</div>
+        <div class="eow-body">
+          <strong>Society Investigates.</strong>
+          <ul>
+            <li>Shuffle gossip; remove ⌊total ÷ 3⌋ to safe pile (round down); reveal rest.</li>
+            <li><span class="tip">💡 Domino item: play here, before revealing, to ignore your reputation during raids.</span></li>
+            <li>Each threat → 1 evidence per matching desire/molly → place on that house.</li>
+            <li class="warn">≥7 evidence on an open house → <strong>RAIDED</strong>: place markers; remove 7 evidence; most rep → major indictment; 2nd most → minor indictment.</li>
+            <li>Check game end (see below).</li>
+          </ul>
+        </div>
+      </div>
+      <div class="eow-step">
+        <div class="eow-num">3</div>
+        <div class="eow-body">
+          <strong>Encounter the Society.</strong> Players who gained indictments place 1 encounter token face-down on nearest open house (clockwise tie-break). Skip if 0–1 tokens.
+        </div>
+      </div>
+      <div class="eow-step">
+        <div class="eow-num">4</div>
+        <div class="eow-body">
+          <strong>Cleanup.</strong>
+          <ol style="padding-left:12px;margin:3px 0">
+            <li>Shuffle all vice cards not in hands/reputations/market → new vice deck.</li>
+            <li>Refill market; add 1 card face-down to gossip.</li>
+            <li>Players spend draw tokens (draw 1 card per token).</li>
+            <li>Discard shop items; deal new items to each shop.</li>
+            <li>Advance week marker; resume with candelabra holder.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Items -->
+  <div class="section">
+    <h2>Item Cards (play once, then discard)</h2>
+    <div class="item">
+      <span class="item-name">Bottle of Gin</span>
+      <span class="item-when"> · after last card, before set selected</span><br>
+      All players (even passed) play one more round.
+    </div>
+    <div class="item">
+      <span class="item-name">Bribe</span>
+      <span class="item-when"> · your turn instead of an action</span><br>
+      Examine gossip pile; secretly take 1 card into hand.
+    </div>
+    <div class="item">
+      <span class="item-name">Domino</span>
+      <span class="item-when"> · before revealing gossip (Society Investigates)</span><br>
+      Your reputation ignored during any raids this phase.
+    </div>
+    <div class="item">
+      <span class="item-name">Dress (per suit)</span>
+      <span class="item-when"> · after you play a card at a festivity</span><br>
+      Surprise Ball = 4 desires of this suit (not sequential). Multiple dresses stack.
+    </div>
+    <div class="item">
+      <span class="item-name">Newspaper Notice</span>
+      <span class="item-when"> · your turn instead of action, at open house</span><br>
+      Place encounter token face-up; matching market cards → gossip (+2 joy each if loyal token). Informer token = become revealed informer immediately.
+    </div>
+    <div class="item">
+      <span class="item-name">Violin</span>
+      <span class="item-when"> · before set selected</span><br>
+      Draw 2 extra cards for the community.
+    </div>
+  </div>
+
+  <!-- Joy thresholds -->
+  <div class="section">
+    <h2>Community Survival — Joy Thresholds</h2>
+    <div class="joy-grid">
+      <div class="joy-cell"><div class="joy-p">2p</div><div class="joy-v">35</div></div>
+      <div class="joy-cell"><div class="joy-p">3p</div><div class="joy-v">35</div></div>
+      <div class="joy-cell"><div class="joy-p">4p</div><div class="joy-v">30</div></div>
+      <div class="joy-cell"><div class="joy-p">5p</div><div class="joy-v">25</div></div>
+    </div>
+  </div>
+
+  <!-- Setup quick ref -->
+  <div class="section">
+    <h2>Setup — Player-Count Variables</h2>
+    <table class="rank-table">
+      <tr><th>Players</th><th>Desire cards</th><th>Starting hand</th><th>Festivity hand min</th></tr>
+      <tr><td>2</td><td>1–6 each suit</td><td>5 cards</td><td>3 cards</td></tr>
+      <tr><td>3</td><td>1–7 each suit</td><td>4 cards</td><td>2 cards</td></tr>
+      <tr><td>4</td><td>1–8 each suit</td><td>4 cards</td><td>2 cards</td></tr>
+      <tr><td>5</td><td>1–9 each suit</td><td>4 cards</td><td>2 cards</td></tr>
+    </table>
+    <p style="font-size:0.76em;color:var(--muted);margin-top:3px">Festivity play rounds: 2 rounds (3–5p) · 3 rounds (2p)</p>
+  </div>
+
+</div><!-- /right -->
+</div><!-- /cols -->
+
+<!-- Game Endings (full width) -->
+<div class="section">
+  <h2>Game Endings</h2>
+  <div class="endings">
+    <div class="ending inf">
+      <h3>💀 Community Infiltration</h3>
+      <p style="font-size:0.9em;color:var(--muted);margin-bottom:4px">All 4 houses raided, <em>or</em> a raided house reaches ≥7 evidence.</p>
+      <ul>
+        <li>Reveal all encounter tokens.</li>
+        <li class="warn">Non-informers &amp; informers at open houses → <strong>hanged</strong>.</li>
+        <li>Informers at raided house → not hanged; joy = 0.</li>
+        <li><strong>Informer score:</strong> +2 VP/evidence at house; +2 VP/matching rep of others; −1 VP/own reputation (all suits). Highest positive score wins; ties/no positive = all lose.</li>
+      </ul>
+    </div>
+    <div class="ending sur">
+      <h3>🎉 Community Survival</h3>
+      <p style="font-size:0.9em;color:var(--muted);margin-bottom:4px">Community joy reaches threshold before game otherwise ends.</p>
+      <ul>
+        <li>Reveal encounter tokens &amp; indictments.</li>
+        <li class="ok">Successful informers (token at raided house): discard all indictments.</li>
+        <li class="warn">Failed informers (token at open house): +1 major indictment.</li>
+        <li>+2 joy per loyal token at an open house.</li>
+        <li>Indictment trials: roll d10 per card; lose that joy. <span class="warn">Noose = hanged.</span></li>
+        <li>Highest unhanged joy wins; ties share victory.</li>
+      </ul>
+    </div>
+    <div class="ending atr">
+      <h3>💨 Community Atrophy</h3>
+      <p style="font-size:0.9em;color:var(--muted);margin-bottom:4px">Fifth week ends with no Infiltration or Survival.</p>
+      <p>All players lose.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Houses -->
+<div class="section" style="margin-bottom:0">
+  <h2>Molly Houses &amp; Suits</h2>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;font-size:0.82em">
+    <span>◆ <span class="suit suit-p">Pentacles</span> — Mother Clap's</span>
+    <span>♦ <span class="suit suit-f">Fans</span> — Miss Muff's</span>
+    <span>♥ <span class="suit suit-h">Hearts</span> — Sukey Bevell's</span>
+    <span>◉ <span class="suit suit-c">Cups</span> — Julius Cesar Taylor's</span>
+  </div>
+</div>
+
+<footer>
+  Molly House by Wehrlegig Games (Jo Kelly, Cole Wehrle, Drew Wehrle) · CC BY-NC-SA 4.0 ·
+  Reference compiled from the rulebook (pp. 4–18) and Player Aid sheets.
+</footer>
+
+</div><!-- /page -->
+</body>
+</html>
