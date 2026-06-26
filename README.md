@@ -48,4 +48,6 @@ All content is sourced from the PDFs in `Molly house game/`:
 
 ## License
 
-Game rules and materials © Wehrlegig Games, licensed under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/). This companion app is a non-commercial personal aid made under the same licence terms.
+This repository is licensed under **[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)** — see [LICENSE](LICENSE).
+
+It is a derivative of game materials for Molly House © Wehrlegig Games, which are also released under CC BY-NC-SA 4.0. The ShareAlike clause requires this project to carry the same licence. Free to share and adapt for non-commercial purposes with attribution.
