@@ -250,49 +250,6 @@ footer {
     </ol>
   </div>
 
-  <!-- Festivity ranking -->
-  <div class="section">
-    <h2>Festivity Ranking (best 4 cards)</h2>
-    <table class="rank-table">
-      <tr><th></th><th>Name</th><th>Definition</th></tr>
-      <tr>
-        <td>🥇</td>
-        <td><strong>Surprise Ball</strong></td>
-        <td>4 desires, same suit, sequential order</td>
-      </tr>
-      <tr>
-        <td>🥈</td>
-        <td><strong>Christening</strong></td>
-        <td>1 Queen + 3 desires of same value</td>
-      </tr>
-      <tr>
-        <td>🥉</td>
-        <td><strong>Dance</strong></td>
-        <td>1 Jack + 3 desires in sequence (ignore suit)</td>
-      </tr>
-      <tr>
-        <td>✸</td>
-        <td><strong>Quiet Gathering</strong></td>
-        <td>4 lowest desires — constables = 0; rogues ignored</td>
-      </tr>
-    </table>
-    <p style="font-size:0.75em;color:var(--muted);margin-top:4px">Ties: pick set with highest desire value. Runner decides between multiple valid sets of equal rank.</p>
-    <p style="font-size:0.75em;color:var(--muted)">Rogues: owner sets value 0–9 on d10. Community rogue: roll d10.</p>
-  </div>
-
-  <!-- Festivity bonuses quick ref -->
-  <div class="section">
-    <h2>Festivity Bonuses</h2>
-    <table class="rank-table">
-      <tr><th>Result</th><th>Runner</th><th>Community joy</th></tr>
-      <tr><td>Surprise Ball</td><td>+rep at house</td><td>+3</td></tr>
-      <tr><td>Christening</td><td>+rep at house</td><td>+2</td></tr>
-      <tr><td>Dance</td><td>+rep at house</td><td>+1</td></tr>
-      <tr><td class="warn">Quiet Gathering</td><td class="warn">−rep at house</td><td class="warn">−1</td></tr>
-    </table>
-    <p style="font-size:0.75em;color:var(--muted);margin-top:3px">Joy cannot go below 0.</p>
-  </div>
-
 </div><!-- /left -->
 
 <!-- RIGHT COLUMN -->
@@ -343,9 +300,63 @@ footer {
     </div>
   </div>
 
-  <!-- Items -->
-  <div class="section">
-    <h2>Item Cards (play once, then discard)</h2>
+</div><!-- /right -->
+
+<!-- FESTIVITY RANKING + BONUSES — spans both columns -->
+<div class="section col-full">
+  <h2>Festivity Ranking &amp; Bonuses (best 4 cards)</h2>
+  <table class="rank-table">
+    <tr><th></th><th>Name</th><th>Definition</th><th>Runner bonus</th><th>Community joy</th></tr>
+    <tr>
+      <td>🥇</td>
+      <td><strong>Surprise Ball</strong></td>
+      <td>4 desires, same suit, sequential order</td>
+      <td>+rep at festivity house</td>
+      <td>+3</td>
+    </tr>
+    <tr>
+      <td>🥈</td>
+      <td><strong>Christening</strong></td>
+      <td>1 Queen + 3 desires of same value</td>
+      <td>+rep at festivity house</td>
+      <td>+2</td>
+    </tr>
+    <tr>
+      <td>🥉</td>
+      <td><strong>Dance</strong></td>
+      <td>1 Jack + 3 desires in sequence (ignore suit)</td>
+      <td>+rep at festivity house</td>
+      <td>+1</td>
+    </tr>
+    <tr>
+      <td>✸</td>
+      <td><strong class="warn">Quiet Gathering</strong></td>
+      <td>4 lowest desires — constables = 0; rogues ignored</td>
+      <td class="warn">−rep at festivity house</td>
+      <td class="warn">−1</td>
+    </tr>
+  </table>
+  <p style="font-size:0.75em;color:var(--muted);margin-top:4px">Ties: pick set with highest desire value. Runner decides between multiple valid sets of equal rank. Rogues: owner sets value 0–9 on d10; community rogue = roll d10. Joy cannot go below 0.</p>
+</div>
+
+</div><!-- /cols -->
+
+<!-- Setup — full width -->
+<div class="section">
+  <h2>Setup — Player-Count Variables</h2>
+  <table class="rank-table">
+    <tr><th>Players</th><th>Desire cards</th><th>Starting hand</th><th>Festivity hand min</th><th>Festivity rounds</th><th>Survival threshold</th></tr>
+    <tr><td>2</td><td>1–6 each suit</td><td>5 cards</td><td>3 cards</td><td>3 rounds</td><td>35 joy</td></tr>
+    <tr><td>3</td><td>1–7 each suit</td><td>4 cards</td><td>2 cards</td><td>2 rounds</td><td>35 joy</td></tr>
+    <tr><td>4</td><td>1–8 each suit</td><td>4 cards</td><td>2 cards</td><td>2 rounds</td><td>30 joy</td></tr>
+    <tr><td>5</td><td>1–9 each suit</td><td>4 cards</td><td>2 cards</td><td>2 rounds</td><td>25 joy</td></tr>
+  </table>
+</div>
+
+<!-- Items — full width -->
+<div class="section">
+  <h2>Item Cards (play once, then discard)</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px 16px">
     <div class="item">
       <span class="item-name">Bottle of Gin</span>
       <span class="item-when"> · after last card, before set selected</span><br>
@@ -377,36 +388,10 @@ footer {
       Draw 2 extra cards for the community.
     </div>
   </div>
+</div>
 
-  <!-- Joy thresholds -->
-  <div class="section">
-    <h2>Community Survival — Joy Thresholds</h2>
-    <div class="joy-grid">
-      <div class="joy-cell"><div class="joy-p">2p</div><div class="joy-v">35</div></div>
-      <div class="joy-cell"><div class="joy-p">3p</div><div class="joy-v">35</div></div>
-      <div class="joy-cell"><div class="joy-p">4p</div><div class="joy-v">30</div></div>
-      <div class="joy-cell"><div class="joy-p">5p</div><div class="joy-v">25</div></div>
-    </div>
-  </div>
-
-  <!-- Setup quick ref -->
-  <div class="section">
-    <h2>Setup — Player-Count Variables</h2>
-    <table class="rank-table">
-      <tr><th>Players</th><th>Desire cards</th><th>Starting hand</th><th>Festivity hand min</th></tr>
-      <tr><td>2</td><td>1–6 each suit</td><td>5 cards</td><td>3 cards</td></tr>
-      <tr><td>3</td><td>1–7 each suit</td><td>4 cards</td><td>2 cards</td></tr>
-      <tr><td>4</td><td>1–8 each suit</td><td>4 cards</td><td>2 cards</td></tr>
-      <tr><td>5</td><td>1–9 each suit</td><td>4 cards</td><td>2 cards</td></tr>
-    </table>
-    <p style="font-size:0.76em;color:var(--muted);margin-top:3px">Festivity play rounds: 2 rounds (3–5p) · 3 rounds (2p)</p>
-  </div>
-
-</div><!-- /right -->
-</div><!-- /cols -->
-
-<!-- Game Endings (full width) -->
-<div class="section">
+<!-- Game Endings — full width -->
+<div class="section" style="margin-bottom:0">
   <h2>Game Endings</h2>
   <div class="endings">
     <div class="ending inf">
@@ -436,17 +421,6 @@ footer {
       <p style="font-size:0.9em;color:var(--muted);margin-bottom:4px">Fifth week ends with no Infiltration or Survival.</p>
       <p>All players lose.</p>
     </div>
-  </div>
-</div>
-
-<!-- Houses -->
-<div class="section" style="margin-bottom:0">
-  <h2>Molly Houses &amp; Suits</h2>
-  <div style="display:flex;gap:10px;flex-wrap:wrap;font-size:0.82em">
-    <span>◆ <span class="suit suit-p">Pentacles</span> — Mother Clap's</span>
-    <span>♦ <span class="suit suit-f">Fans</span> — Miss Muff's</span>
-    <span>♥ <span class="suit suit-h">Hearts</span> — Sukey Bevell's</span>
-    <span>◉ <span class="suit suit-c">Cups</span> — Julius Cesar Taylor's</span>
   </div>
 </div>
 
